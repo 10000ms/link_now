@@ -1,0 +1,18 @@
+# Windows:
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Python:
+*.py[cod]
+*.so
+*.egg
+*.egg-info
+build
+
+# My configurations:
+.idea
+vcs.xml
+venv
+db.sqlite3
+.qiniu_pythonsdk_hostscache.json
