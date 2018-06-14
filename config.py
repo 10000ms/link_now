@@ -1,7 +1,17 @@
 # -*- coding: utf-8 -*-
+"""
+    config
+    ~~~~~~~~~
+
+    配置信息模块
+
+    :copyright: (c) 2018 by Victor Lai.
+
+"""
 import os
 
 
+# 项目文件夹路径
 BASE_DIR = os.path.dirname(__file__)
 
 
@@ -23,6 +33,7 @@ settings = {
 }
 
 
+# mongodb settings
 mongodb = {
     'host': 'localhost',
     'port': 27017,
@@ -32,6 +43,7 @@ mongodb = {
 }
 
 
+# redis settings
 redis = {
     'host': 'localhost',
     'port': 6379,

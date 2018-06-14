@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+"""
+    server
+    ~~~~~~~~~
+
+    项目入口及启动模块
+
+    :copyright: (c) 2018 by Victor Lai.
+
+"""
 import tornado.ioloop
 import tornado.httpserver
 

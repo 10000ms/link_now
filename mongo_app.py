@@ -1,4 +1,13 @@
 # -*- coding: utf-8 -*-
+"""
+    mongo_app
+    ~~~~~~~~~
+
+    mongo连接类模块
+
+    :copyright: (c) 2018 by Victor Lai.
+
+"""
 import pymongo
 import sys
 import traceback

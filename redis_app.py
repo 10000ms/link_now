@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+"""
+    redis_app
+    ~~~~~~~~~
+
+    redis连接类模块
+
+    :copyright: (c) 2018 by Victor Lai.
+
+"""
 import redis
 
 
