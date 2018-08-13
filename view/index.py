@@ -233,3 +233,4 @@ class Support(object):
         md5_maker = md5()
         md5_maker.update(raw_token)
         return md5_maker.hexdigest()
+
