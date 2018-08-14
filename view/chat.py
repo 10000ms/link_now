@@ -16,28 +16,39 @@ from tornado.web import RequestHandler
 from tornado.websocket import WebSocketHandler
 
 import config
+from utils import get_redis_fetch_data
 
 
 class ChatRoomHandler(RequestHandler):
 
-    def get(self):
+    async def get(self):
         """
         聊天室页面get方法
         :return: 检查通过的用户返回聊天室页面，错误返回登陆页面
         """
         user_token = self.get_secure_cookie("user_token")
         chat_room_user = self.get_secure_cookie("chat_room_user")
+
         # 检查用户cookie信息是否和Redis数据库中的一致
-        if self.application.redis.hexists("user_token", chat_room_user):
-            get_token = self.application.redis.hget("user_token", chat_room_user)
-            if str(user_token)[2:-1] == str(get_token):
-                # 生成聊天室WebSocket地址
-                chat_url = "ws://" + config.settings['local_url'] \
-                           + ":" + str(config.options['port']) \
-                           + RequestHandler.reverse_url(self, "chat_room")
-                return self.render("chat/chat_room.html", chat_url=chat_url, user_token=user_token)
-        url = RequestHandler.reverse_url(self, "login")
-        return self.redirect(url)
+        session_check_data = {
+            'account': chat_room_user.decode(),
+            'session': user_token.decode(),
+            'remote': 'http://' + config.settings['local_url'] + ':' + str(config.options['port'])
+        }
+        res = await get_redis_fetch_data(session_check_data, '/session/check_session')
+        status = json.loads(res.body)
+        status = status['status']
+        if status == 'ok':
+            # 生成聊天室WebSocket地址
+            chat_url = 'ws://' \
+                       + config.settings['local_url'] \
+                       + ':' \
+                       + str(config.options['port']) \
+                       + RequestHandler.reverse_url(self, 'chat_room')
+            return self.render("chat/chat_room.html", chat_url=chat_url, user_token=user_token)
+        else:
+            url = RequestHandler.reverse_url(self, "login")
+            return self.redirect(url)
 
 
 class ChatHandler(WebSocketHandler):

@@ -18,12 +18,12 @@ import uuid
 
 import tornado
 from tornado.web import RequestHandler
-from tornado.httpclient import (
-    AsyncHTTPClient,
-    HTTPRequest,
-)
 
 import config
+from utils import (
+    get_redis_fetch_data,
+    get_mongo_fetch_data,
+)
 
 
 class StaticFileHandler(tornado.web.StaticFileHandler):
@@ -65,7 +65,7 @@ class LoginHandler(RequestHandler):
         json_user_data = {
             'account': account,
         }
-        mongo_res = await Support.get_mongo_fetch_data(json_user_data, '/user/login')
+        mongo_res = await get_mongo_fetch_data(json_user_data, '/user/login')
         get_data = json.loads(mongo_res.body)
         status = get_data['status']
 
@@ -79,7 +79,7 @@ class LoginHandler(RequestHandler):
             return self.render("index/login.html", url=url, messages=messages)
 
         # 检测单点登陆
-        redis_res = await Support.get_redis_fetch_data(json_user_data, '/session/check_login')
+        redis_res = await get_redis_fetch_data(json_user_data, '/session/check_login')
         get_redis_data = json.loads(redis_res.body)
         if get_redis_data['status'] != 'ok':
             messages.append("用户已登陆")
@@ -102,7 +102,7 @@ class LoginHandler(RequestHandler):
             'account': account,
             'session': user_token_value,
         }
-        Support.get_redis_fetch_data(session_data, '/session/add')
+        get_redis_fetch_data(session_data, '/session/add')
         # 跳转聊天室
         return self.redirect(chat_room_url)
 
@@ -162,7 +162,7 @@ class RegisterHandler(RequestHandler):
             'username': username,
             'email': email,
         }
-        res = await Support.get_mongo_fetch_data(json_user_data, '/user/register')
+        res = await get_mongo_fetch_data(json_user_data, '/user/register')
         status = json.loads(res.body)
         status = status['status']
         if status == 'ok':
@@ -181,7 +181,7 @@ class RegisterHandler(RequestHandler):
                 'account': account,
                 'session': user_token_value,
             }
-            Support.get_redis_fetch_data(session_data, '/session/add')
+            get_redis_fetch_data(session_data, '/session/add')
             # 跳转聊天室
             return self.redirect(chat_room_url)
         else:
@@ -247,53 +247,6 @@ class Support(object):
     def single_login_token():
         """
         生成单点登陆用token
-        :param account: 用户帐号
         :return: token
         """
         return str(uuid.uuid4())
-
-    @staticmethod
-    def get_mongo_fetch_data(data, url):
-        """
-        包装异步mongo的fetch
-        :param data: 原始可json的数据
-        :param url: 路由
-        :return: future对象，可以使用awiat来获得request对象
-        """
-        json_data = json.dumps(data)
-        http_client = AsyncHTTPClient()
-        mongo_url = \
-            'http://' \
-            + config.aiohttp_mongodb_unit['host'] \
-            + ':' \
-            + str(config.aiohttp_mongodb_unit['port']) \
-            + url
-        mongo_request = HTTPRequest(
-            url=mongo_url,
-            method='POST',
-            body=json_data,
-        )
-        return http_client.fetch(mongo_request)
-
-    @staticmethod
-    def get_redis_fetch_data(data, url):
-        """
-        包装异步redis的fetch
-        :param data: 原始可json的数据
-        :param url: 路由
-        :return: future对象，可以使用awiat来获得request对象
-        """
-        json_data = json.dumps(data)
-        http_client = AsyncHTTPClient()
-        mongo_url = \
-            'http://' \
-            + config.aiohttp_redis_unit['host'] \
-            + ':' \
-            + str(config.aiohttp_redis_unit['port']) \
-            + url
-        mongo_request = HTTPRequest(
-            url=mongo_url,
-            method='POST',
-            body=json_data,
-        )
-        return http_client.fetch(mongo_request)
