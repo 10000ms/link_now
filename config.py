@@ -17,7 +17,7 @@ BASE_DIR = os.path.dirname(__file__)
 
 # server options
 options = {
-    "port": 8011,
+    "port": 8015,
 }
 
 # server settings
@@ -53,7 +53,7 @@ redis = {
 
 aiohttp_redis_unit = {
     'host': 'localhost',
-    'port': 6379,
+    'port': 8081,
 }
 
 

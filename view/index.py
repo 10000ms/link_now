@@ -14,6 +14,7 @@ import random
 from hashlib import sha256
 import re
 import json
+import uuid
 
 import tornado
 from tornado.web import RequestHandler
@@ -44,7 +45,7 @@ class LoginHandler(RequestHandler):
         url = RequestHandler.reverse_url(self, "login")
         return self.render("index/login.html", url=url, messages=messages)
 
-    def post(self, *args, **kwargs):
+    async def post(self, *args, **kwargs):
         """
         处理用户登陆
 
@@ -60,36 +61,50 @@ class LoginHandler(RequestHandler):
             messages.append("帐号不合法")
             return self.render("index/login.html", url=url, messages=messages)
         password = self.get_body_argument("password")
-        get_user = self.db_checker.find_one({"account": account})
+
+        json_user_data = {
+            'account': account,
+        }
+        mongo_res = await Support.get_mongo_fetch_data(json_user_data, '/user/login')
+        get_data = json.loads(mongo_res.body)
+        status = get_data['status']
+
         # 检测是否存在该用户
-        if not get_user:
+        if status != 'ok':
             messages.append("未找到用户")
             return self.render("index/login.html", url=url, messages=messages)
         # 检测密码是否正确
-        if not Support.check_password(password, get_user["password"]):
+        if not Support.check_password(password, get_data["password"]):
             messages.append("密码错误")
             return self.render("index/login.html", url=url, messages=messages)
+
         # 检测单点登陆
-        if self.application.redis.hexists("user_token", account):
+        redis_res = await Support.get_redis_fetch_data(json_user_data, '/session/check_login')
+        get_redis_data = json.loads(redis_res.body)
+        if get_redis_data['status'] != 'ok':
             messages.append("用户已登陆")
             return self.render("index/login.html", url=url, messages=messages)
-        else:
-            # 通过所有检测
 
-            # 获取聊天室url地址
-            chat_room_url = RequestHandler.reverse_url(self, "chat")
-            # 获取单点登陆的token
-            user_token_value = Support.single_login_token(account)
-            # 设置单点登陆的cookie
-            self.set_secure_cookie("user_token", user_token_value)
-            # 设置用户账户的cookie
-            self.set_secure_cookie("chat_room_user", account)
-            # 设置用户名的cookie
-            self.set_secure_cookie("chat_room_username", get_user["username"])
-            # Redis记录单点登陆token
-            self.redis.hset("user_token", account, user_token_value)
-            # 跳转聊天室
-            return self.redirect(chat_room_url)
+        # 通过所有检测
+
+        # 获取聊天室url地址
+        chat_room_url = RequestHandler.reverse_url(self, "chat")
+        # 获取单点登陆的token
+        user_token_value = Support.single_login_token()
+        # 设置单点登陆的cookie
+        self.set_secure_cookie("user_token", user_token_value)
+        # 设置用户账户的cookie
+        self.set_secure_cookie("chat_room_user", account)
+        # 设置用户名的cookie
+        # self.set_secure_cookie("chat_room_username", get_user["username"])
+        # Redis记录单点登陆token
+        session_data = {
+            'account': account,
+            'session': user_token_value,
+        }
+        Support.get_redis_fetch_data(session_data, '/session/add')
+        # 跳转聊天室
+        return self.redirect(chat_room_url)
 
 
 class RegisterHandler(RequestHandler):
@@ -114,7 +129,6 @@ class RegisterHandler(RequestHandler):
         messages = []
         url = RequestHandler.reverse_url(self, "register")
         account = self.get_body_argument("account", default=None, strip=True)
-        # get_user = self.db_checker.find_one({"account": account})
         # 检查账户是否存在并是否合法
         if Support.check_account(account) is False:
             messages.append("账户已存在或帐号不合法")
@@ -133,16 +147,11 @@ class RegisterHandler(RequestHandler):
         if len(email) < 4:
             messages.append("请输入正确格式的邮箱")
             return self.render("index/register.html", url=url, messages=messages)
-        # get_email = self.db_checker.find_one({"email": email})
-        # if get_email:
-        #     messages.append("注册邮箱已存在")
-        #     return self.render("index/register.html", url=url, messages=messages)
         username = self.get_body_argument("username", default=None, strip=True)
         # 用户名检查
         if len(username) <= 2:
             messages.append("用户名过短")
             return self.render("index/register.html", url=url, messages=messages)
-        # 通过注册检测
 
         # 生产sha256密码
         sha256_password = Support.get_password(password)
@@ -153,28 +162,14 @@ class RegisterHandler(RequestHandler):
             'username': username,
             'email': email,
         }
-        json_user_data = json.dumps(json_user_data)
-        http_client = AsyncHTTPClient()
-        register_url = \
-            'http://' \
-            + config.aiohttp_mongodb_unit['host'] \
-            + ':' \
-            + str(config.aiohttp_mongodb_unit['port']) \
-            + '/user/register'
-        register_request = HTTPRequest(
-            url=register_url,
-            method='POST',
-            body=json_user_data,
-
-        )
-        res = await http_client.fetch(register_request)
+        res = await Support.get_mongo_fetch_data(json_user_data, '/user/register')
         status = json.loads(res.body)
         status = status['status']
         if status == 'ok':
             # 获取聊天室url地址
             chat_room_url = RequestHandler.reverse_url(self, "chat")
             # 获取单点登陆的token
-            user_token_value = Support.single_login_token(account)
+            user_token_value = Support.single_login_token()
             # 设置单点登陆的cookie
             self.set_secure_cookie("user_token", user_token_value)
             # 设置用户账户的cookie
@@ -182,7 +177,11 @@ class RegisterHandler(RequestHandler):
             # 设置用户名的cookie
             self.set_secure_cookie("chat_room_username", username)
             # Redis记录单点登陆token
-            self.redis.hset("user_token", account, user_token_value)
+            session_data = {
+                'account': account,
+                'session': user_token_value,
+            }
+            Support.get_redis_fetch_data(session_data, '/session/add')
             # 跳转聊天室
             return self.redirect(chat_room_url)
         else:
@@ -245,16 +244,56 @@ class Support(object):
             return False
 
     @staticmethod
-    def single_login_token(account):
+    def single_login_token():
         """
         生成单点登陆用token
         :param account: 用户帐号
         :return: token
         """
-        num = random.randint(1, 10000)
-        raw_token = str(account) + str(config.settings['cookie_secret']) + str(num)
-        raw_token = raw_token.encode("utf-8")
-        sha256_maker = sha256()
-        sha256_maker.update(raw_token)
-        return sha256_maker.hexdigest()
+        return str(uuid.uuid4())
 
+    @staticmethod
+    def get_mongo_fetch_data(data, url):
+        """
+        包装异步mongo的fetch
+        :param data: 原始可json的数据
+        :param url: 路由
+        :return: future对象，可以使用awiat来获得request对象
+        """
+        json_data = json.dumps(data)
+        http_client = AsyncHTTPClient()
+        mongo_url = \
+            'http://' \
+            + config.aiohttp_mongodb_unit['host'] \
+            + ':' \
+            + str(config.aiohttp_mongodb_unit['port']) \
+            + url
+        mongo_request = HTTPRequest(
+            url=mongo_url,
+            method='POST',
+            body=json_data,
+        )
+        return http_client.fetch(mongo_request)
+
+    @staticmethod
+    def get_redis_fetch_data(data, url):
+        """
+        包装异步redis的fetch
+        :param data: 原始可json的数据
+        :param url: 路由
+        :return: future对象，可以使用awiat来获得request对象
+        """
+        json_data = json.dumps(data)
+        http_client = AsyncHTTPClient()
+        mongo_url = \
+            'http://' \
+            + config.aiohttp_redis_unit['host'] \
+            + ':' \
+            + str(config.aiohttp_redis_unit['port']) \
+            + url
+        mongo_request = HTTPRequest(
+            url=mongo_url,
+            method='POST',
+            body=json_data,
+        )
+        return http_client.fetch(mongo_request)
