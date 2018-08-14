@@ -49,3 +49,15 @@ redis = {
     'port': 6379,
     'password': None
 }
+
+
+aiohttp_redis_unit = {
+    'host': 'localhost',
+    'port': 6379,
+}
+
+
+aiohttp_mongodb_unit = {
+    'host': 'localhost',
+    'port': 9988,
+}

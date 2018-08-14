@@ -11,11 +11,16 @@
 
 """
 import random
-from hashlib import md5
+from hashlib import sha256
 import re
+import json
 
 import tornado
 from tornado.web import RequestHandler
+from tornado.httpclient import (
+    AsyncHTTPClient,
+    HTTPRequest,
+)
 
 import config
 
@@ -99,7 +104,7 @@ class RegisterHandler(RequestHandler):
         url = RequestHandler.reverse_url(self, "register")
         return self.render("index/register.html", url=url, messages=messages)
 
-    def post(self, *args, **kwargs):
+    async def post(self, *args, **kwargs):
         """
         处理用户注册
         :param args:
@@ -109,9 +114,9 @@ class RegisterHandler(RequestHandler):
         messages = []
         url = RequestHandler.reverse_url(self, "register")
         account = self.get_body_argument("account", default=None, strip=True)
-        get_user = self.db_checker.find_one({"account": account})
+        # get_user = self.db_checker.find_one({"account": account})
         # 检查账户是否存在并是否合法
-        if get_user or not Support.check_account(account):
+        if Support.check_account(account) is False:
             messages.append("账户已存在或帐号不合法")
             return self.render("index/register.html", url=url, messages=messages)
         password = self.get_body_argument("password", default=None, strip=True)
@@ -128,10 +133,10 @@ class RegisterHandler(RequestHandler):
         if len(email) < 4:
             messages.append("请输入正确格式的邮箱")
             return self.render("index/register.html", url=url, messages=messages)
-        get_email = self.db_checker.find_one({"email": email})
-        if get_email:
-            messages.append("注册邮箱已存在")
-            return self.render("index/register.html", url=url, messages=messages)
+        # get_email = self.db_checker.find_one({"email": email})
+        # if get_email:
+        #     messages.append("注册邮箱已存在")
+        #     return self.render("index/register.html", url=url, messages=messages)
         username = self.get_body_argument("username", default=None, strip=True)
         # 用户名检查
         if len(username) <= 2:
@@ -139,31 +144,50 @@ class RegisterHandler(RequestHandler):
             return self.render("index/register.html", url=url, messages=messages)
         # 通过注册检测
 
-        # 生产md5密码
-        md5_password = Support.get_password(password)
-        # 包装插入MongoDB数据
-        user_data = [{
+        # 生产sha256密码
+        sha256_password = Support.get_password(password)
+
+        json_user_data = {
             'account': account,
-            'password': md5_password,
+            'password': sha256_password,
             'username': username,
             'email': email,
-        }, ]
-        # 插入数据
-        self.db_checker.insert(user_data)
-        # 获取聊天室url地址
-        chat_room_url = RequestHandler.reverse_url(self, "chat")
-        # 获取单点登陆的token
-        user_token_value = Support.single_login_token(account)
-        # 设置单点登陆的cookie
-        self.set_secure_cookie("user_token", user_token_value)
-        # 设置用户账户的cookie
-        self.set_secure_cookie("chat_room_user", account)
-        # 设置用户名的cookie
-        self.set_secure_cookie("chat_room_username", username)
-        # Redis记录单点登陆token
-        self.redis.hset("user_token", account, user_token_value)
-        # 跳转聊天室
-        return self.redirect(chat_room_url)
+        }
+        json_user_data = json.dumps(json_user_data)
+        http_client = AsyncHTTPClient()
+        register_url = \
+            'http://' \
+            + config.aiohttp_mongodb_unit['host'] \
+            + ':' \
+            + str(config.aiohttp_mongodb_unit['port']) \
+            + '/user/register'
+        register_request = HTTPRequest(
+            url=register_url,
+            method='POST',
+            body=json_user_data,
+
+        )
+        res = await http_client.fetch(register_request)
+        status = json.loads(res.body)
+        status = status['status']
+        if status == 'ok':
+            # 获取聊天室url地址
+            chat_room_url = RequestHandler.reverse_url(self, "chat")
+            # 获取单点登陆的token
+            user_token_value = Support.single_login_token(account)
+            # 设置单点登陆的cookie
+            self.set_secure_cookie("user_token", user_token_value)
+            # 设置用户账户的cookie
+            self.set_secure_cookie("chat_room_user", account)
+            # 设置用户名的cookie
+            self.set_secure_cookie("chat_room_username", username)
+            # Redis记录单点登陆token
+            self.redis.hset("user_token", account, user_token_value)
+            # 跳转聊天室
+            return self.redirect(chat_room_url)
+        else:
+            messages.append("邮箱或用户名已存在")
+            return self.render("index/register.html", url=url, messages=messages)
 
 
 class Support(object):
@@ -174,18 +198,18 @@ class Support(object):
     @staticmethod
     def get_password(pw):
         """
-        原始密码生成md5加盐码
+        原始密码生成sha256加盐码
         :param pw: 密码
-        :return: md5加盐码
+        :return: sha256加盐码
         """
         # 加入随机数字
-        num = random.randint(1, 10)
-        md5_maker = md5()
+        num = random.randint(100, 10000)
+        sha256_maker = sha256()
         pw = str(pw) + str(config.settings['cookie_secret']) + str(num)
         pw = pw.encode('utf-8')
-        md5_maker.update(pw)
+        sha256_maker.update(pw)
         # 前面加入该随机数字，用于解密
-        return str(num) + "|" + md5_maker.hexdigest()
+        return str(num) + "|" + sha256_maker.hexdigest()
 
     @staticmethod
     def check_password(need_check_pw, old_pw):
@@ -197,11 +221,11 @@ class Support(object):
         """
         num = old_pw.split("|", 1)[0]
         older = old_pw.split("|", 1)[1]
-        md5_maker = md5()
+        sha256_maker = sha256()
         need_check_pw = str(need_check_pw) + str(config.settings['cookie_secret']) + str(num)
         need_check_pw = need_check_pw.encode("utf-8")
-        md5_maker.update(need_check_pw)
-        if md5_maker.hexdigest() == older:
+        sha256_maker.update(need_check_pw)
+        if sha256_maker.hexdigest() == older:
             return True
         else:
             return False
@@ -230,7 +254,7 @@ class Support(object):
         num = random.randint(1, 10000)
         raw_token = str(account) + str(config.settings['cookie_secret']) + str(num)
         raw_token = raw_token.encode("utf-8")
-        md5_maker = md5()
-        md5_maker.update(raw_token)
-        return md5_maker.hexdigest()
+        sha256_maker = sha256()
+        sha256_maker.update(raw_token)
+        return sha256_maker.hexdigest()
 
