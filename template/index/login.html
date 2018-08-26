@@ -8,94 +8,27 @@
     <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <style>
-        .content-div{
-            margin-top: 110px;
-            height: 600px;
-            width: 100%;
-        }
-        .login-block{
-            width: 40%;
-            margin-right: auto;
-            margin-left: auto;
-        }
-        .login-content{
-            width:450px;
-            position:relative;
-            margin-top:200px;
-            margin-left:auto;
-            margin-right:auto;
-            box-shadow: 0 0 5px 5px #f0f0f0;
-            padding-left: 20px;
-            padding-right: 20px;
-            padding-bottom: 20px;
-            border-radius: 15px;
-        }
-        form{
-            line-height: 2.5;
-        }
-        label.control-label{
-            font-size: 20px;
-            color:#808080;
-        }
-        input.form-control{
-            width:400px;
-        }
-        input.btn{
-            width:150px;
-            margin-left:125px;
-            margin-top:15px;
-            margin-bottom: 20px;
-            background-color:#808080;
-            font-size: 14px;
-            color:#FFFFFF;
-        }
-
-        ::-webkit-input-placeholder { /* WebKit browsers */
-            font-size:5px;
-            color:#D0D0D0;
-            letter-spacing:2px;
-        }
-        ::-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-            font-size:5px;
-            color:#D0D0D0;
-            letter-spacing:2px;
-        }
-        ::-moz-placeholder { /* Mozilla Firefox 19+ */
-            font-size:5px;
-            color:#D0D0D0;
-            letter-spacing:2px;
-        }
-        ::-ms-input-placeholder { /* Internet Explorer 10+ */
-            font-size:5px;
-            color:#D0D0D0;
-            letter-spacing:2px;
-        }
-    </style>
+    <link href="/static/css/user.css" rel="stylesheet">
 </head>
 <body>
     <div class="content-div">
-        <div class="login-block">
-            <div class="login-content">
-                <div>
-                    <form action="{{ url }}" method='post'  accept-charset="utf-8" enctype="multipart/form-data">
-                        {% module xsrf_form_html() %}
-                        <label class="control-label" for="account">帐号：</label>
-                        <input class="form-control" type="text" name="account" id="account" required="required" placeholder="请输入帐号" >
-                        <label class="control-label" for="password">密码：</label>
-                        <input class="form-control" type="password" name="password" id="password" required="required" placeholder="请输入密码" value="" >
-                        <input class="btn btn-default" type="submit" value="提交">
-                    </form>
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-warning">
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                {{ message }}
-                            </div>
-                        {% end %}
-                    {% end %}
-                </div>
-            </div>
+        <div class="content">
+            <form action="{{ url }}" method='post'  accept-charset="utf-8" enctype="multipart/form-data">
+                {% module xsrf_form_html() %}
+                <label class="control-label" for="account">帐号：</label>
+                <input class="form-control" type="text" name="account" id="account" required="required" placeholder="请输入帐号" >
+                <label class="control-label" for="password">密码：</label>
+                <input class="form-control" type="password" name="password" id="password" required="required" placeholder="请输入密码" value="" >
+                <input class="btn btn-default" type="submit" value="提交">
+            </form>
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-warning">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        {{ message }}
+                    </div>
+                {% end %}
+            {% end %}
         </div>
     </div>
 </body>

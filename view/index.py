@@ -37,13 +37,13 @@ class LoginHandler(RequestHandler):
 
     def __init__(self, *args, **kwargs):
         super(LoginHandler, self).__init__(*args, **kwargs)
-        self.db_checker = self.application.mongodb["user"]
+        self.db_checker = self.application.mongodb['user']
         self.redis = self.application.redis
 
     def get(self, *args, **kwargs):
         messages = []
-        url = RequestHandler.reverse_url(self, "login")
-        return self.render("index/login.html", url=url, messages=messages)
+        url = RequestHandler.reverse_url(self, 'login')
+        return self.render('index/login.html', url=url, messages=messages)
 
     async def post(self, *args, **kwargs):
         """
@@ -54,47 +54,49 @@ class LoginHandler(RequestHandler):
         :return: 失败返回失败信息并返回登陆页面，成功跳转聊天室
         """
         messages = []
-        url = RequestHandler.reverse_url(self, "login")
-        account = self.get_body_argument("account")
+        url = RequestHandler.reverse_url(self, 'login')
+        account = self.get_body_argument('account')
         # 检测帐号是否合法
         if not Support.check_account(account):
-            messages.append("帐号不合法")
-            return self.render("index/login.html", url=url, messages=messages)
-        password = self.get_body_argument("password")
+            messages.append('帐号不合法')
+            return self.render('index/login.html', url=url, messages=messages)
+        password = self.get_body_argument('password')
 
         json_user_data = {
             'account': account,
         }
         mongo_res = await get_mongo_fetch_data(json_user_data, '/user/login')
-        get_data = json.loads(mongo_res.body)
+        get_data = json.loads(mongo_res)
         status = get_data['status']
 
         # 检测是否存在该用户
         if status != 'ok':
-            messages.append("未找到用户")
-            return self.render("index/login.html", url=url, messages=messages)
+            messages.append('未找到用户')
+            return self.render('index/login.html', url=url, messages=messages)
         # 检测密码是否正确
-        if not Support.check_password(password, get_data["password"]):
-            messages.append("密码错误")
-            return self.render("index/login.html", url=url, messages=messages)
+        if not Support.check_password(password, get_data['password']):
+            messages.append('密码错误')
+            return self.render('index/login.html', url=url, messages=messages)
 
         # 检测单点登陆
         redis_res = await get_redis_fetch_data(json_user_data, '/session/check_login')
-        get_redis_data = json.loads(redis_res.body)
+        get_redis_data = json.loads(redis_res)
         if get_redis_data['status'] != 'ok':
-            messages.append("用户已登陆")
-            return self.render("index/login.html", url=url, messages=messages)
+            messages.append('用户已登陆')
+            return self.render('index/login.html', url=url, messages=messages)
+        print(get_data)
+        self.set_secure_cookie('chat_room_username', get_data['username'])
 
         # 通过所有检测
 
         # 获取聊天室url地址
-        chat_room_url = RequestHandler.reverse_url(self, "chat")
+        chat_room_url = RequestHandler.reverse_url(self, 'chat')
         # 获取单点登陆的token
         user_token_value = Support.single_login_token()
         # 设置单点登陆的cookie
-        self.set_secure_cookie("user_token", user_token_value)
+        self.set_secure_cookie('user_token', user_token_value)
         # 设置用户账户的cookie
-        self.set_secure_cookie("chat_room_user", account)
+        self.set_secure_cookie('account', account)
         # 设置用户名的cookie
         # self.set_secure_cookie("chat_room_username", get_user["username"])
         # Redis记录单点登陆token
@@ -102,7 +104,7 @@ class LoginHandler(RequestHandler):
             'account': account,
             'session': user_token_value,
         }
-        get_redis_fetch_data(session_data, '/session/add')
+        await get_redis_fetch_data(session_data, '/session/add')
         # 跳转聊天室
         return self.redirect(chat_room_url)
 
@@ -111,13 +113,13 @@ class RegisterHandler(RequestHandler):
 
     def __init__(self, *args, **kwargs):
         super(RegisterHandler, self).__init__(*args, **kwargs)
-        self.db_checker = self.application.mongodb["user"]
+        self.db_checker = self.application.mongodb['user']
         self.redis = self.application.redis
 
     def get(self, *args, **kwargs):
         messages = []
-        url = RequestHandler.reverse_url(self, "register")
-        return self.render("index/register.html", url=url, messages=messages)
+        url = RequestHandler.reverse_url(self, 'register')
+        return self.render('index/register.html', url=url, messages=messages)
 
     async def post(self, *args, **kwargs):
         """
@@ -127,31 +129,31 @@ class RegisterHandler(RequestHandler):
         :return: 失败返回失败信息并返回注册页面，成功跳转聊天室
         """
         messages = []
-        url = RequestHandler.reverse_url(self, "register")
-        account = self.get_body_argument("account", default=None, strip=True)
+        url = RequestHandler.reverse_url(self, 'register')
+        account = self.get_body_argument('account', default=None, strip=True)
         # 检查账户是否存在并是否合法
         if Support.check_account(account) is False:
-            messages.append("账户已存在或帐号不合法")
-            return self.render("index/register.html", url=url, messages=messages)
-        password = self.get_body_argument("password", default=None, strip=True)
-        confirm = self.get_body_argument("confirm", default=None, strip=True)
+            messages.append('账户已存在或帐号不合法')
+            return self.render('index/register.html', url=url, messages=messages)
+        password = self.get_body_argument('password', default=None, strip=True)
+        confirm = self.get_body_argument('confirm', default=None, strip=True)
         # 检查两次输入密码是否相同
         if not password or not confirm:
-            messages.append("请输入密码和重复密码")
-            return self.render("index/register.html", url=url, messages=messages)
+            messages.append('请输入密码和重复密码')
+            return self.render('index/register.html', url=url, messages=messages)
         if password != confirm:
-            messages.append("两次输入的密码不一致")
-            return self.render("index/register.html", url=url, messages=messages)
-        email = self.get_body_argument("email", default=None, strip=True)
+            messages.append('两次输入的密码不一致')
+            return self.render('index/register.html', url=url, messages=messages)
+        email = self.get_body_argument('email', default=None, strip=True)
         # email检查
         if len(email) < 4:
-            messages.append("请输入正确格式的邮箱")
-            return self.render("index/register.html", url=url, messages=messages)
-        username = self.get_body_argument("username", default=None, strip=True)
+            messages.append('请输入正确格式的邮箱')
+            return self.render('index/register.html', url=url, messages=messages)
+        username = self.get_body_argument('username', default=None, strip=True)
         # 用户名检查
         if len(username) <= 2:
-            messages.append("用户名过短")
-            return self.render("index/register.html", url=url, messages=messages)
+            messages.append('用户名过短')
+            return self.render('index/register.html', url=url, messages=messages)
 
         # 生产sha256密码
         sha256_password = Support.get_password(password)
@@ -163,30 +165,30 @@ class RegisterHandler(RequestHandler):
             'email': email,
         }
         res = await get_mongo_fetch_data(json_user_data, '/user/register')
-        status = json.loads(res.body)
+        status = json.loads(res)
         status = status['status']
         if status == 'ok':
             # 获取聊天室url地址
-            chat_room_url = RequestHandler.reverse_url(self, "chat")
+            chat_room_url = RequestHandler.reverse_url(self, 'chat')
             # 获取单点登陆的token
             user_token_value = Support.single_login_token()
             # 设置单点登陆的cookie
-            self.set_secure_cookie("user_token", user_token_value)
+            self.set_secure_cookie('user_token', user_token_value)
             # 设置用户账户的cookie
-            self.set_secure_cookie("chat_room_user", account)
+            self.set_secure_cookie('account', account)
             # 设置用户名的cookie
-            self.set_secure_cookie("chat_room_username", username)
+            self.set_secure_cookie('chat_room_username', username)
             # Redis记录单点登陆token
             session_data = {
                 'account': account,
                 'session': user_token_value,
             }
-            get_redis_fetch_data(session_data, '/session/add')
+            await get_redis_fetch_data(session_data, '/session/add')
             # 跳转聊天室
             return self.redirect(chat_room_url)
         else:
-            messages.append("邮箱或用户名已存在")
-            return self.render("index/register.html", url=url, messages=messages)
+            messages.append('邮箱或用户名已存在')
+            return self.render('index/register.html', url=url, messages=messages)
 
 
 class Support(object):
@@ -208,7 +210,7 @@ class Support(object):
         pw = pw.encode('utf-8')
         sha256_maker.update(pw)
         # 前面加入该随机数字，用于解密
-        return str(num) + "|" + sha256_maker.hexdigest()
+        return str(num) + '|' + sha256_maker.hexdigest()
 
     @staticmethod
     def check_password(need_check_pw, old_pw):
@@ -218,11 +220,11 @@ class Support(object):
         :param old_pw: 数据库中用户密码
         :return: 正确为True，错误为False
         """
-        num = old_pw.split("|", 1)[0]
-        older = old_pw.split("|", 1)[1]
+        num = old_pw.split('|', 1)[0]
+        older = old_pw.split('|', 1)[1]
         sha256_maker = sha256()
         need_check_pw = str(need_check_pw) + str(config.settings['cookie_secret']) + str(num)
-        need_check_pw = need_check_pw.encode("utf-8")
+        need_check_pw = need_check_pw.encode('utf-8')
         sha256_maker.update(need_check_pw)
         if sha256_maker.hexdigest() == older:
             return True

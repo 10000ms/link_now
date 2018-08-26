@@ -1,0 +1,73 @@
+body{
+    background: url(http://p8th9ds1l.bkt.clouddn.com/timg1.jpg) no-repeat fixed center;
+    background-size: cover;
+}
+
+.main{
+    width: 400px;
+    height: 150px;
+    padding: 50px;
+
+    border-radius: 10px;
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translateY(-50%) translateX(-50%);
+
+    box-shadow: 1px 1px 20px #ffffff;
+
+    overflow: hidden;
+}
+
+
+.main::after {
+    content: '';
+    position: fixed;
+
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    z-index: -1;
+    -webkit-filter: blur(15px);
+    filter: blur(15px);
+    background: hsla(0, 0%, 100%, 0.25);
+}
+
+
+.big-title{
+    letter-spacing:2px;
+    font-size: 30px;
+    font-weight: bolder;
+    font-family: '微软雅黑','Helvetica Neue',Helvetica,Arial,sans-serif;
+    color: #ffffff;
+    text-align: center;
+}
+
+.info-div{
+    text-align: center;
+    margin-top: 60px;
+}
+
+.info-info{
+
+    background-color: rgba(18, 63, 128, 0.37);
+    width: 20%;
+    height: 28px;
+
+    box-shadow: 0 0 1px 1px rgba(39, 55, 79, 0.56);
+    border-radius: 5px;
+
+    float: left;
+    margin-left: 20%;
+    font-size: 20px;
+    font-weight: 100;
+    font-family: '微软雅黑','Helvetica Neue',Helvetica,Arial,sans-serif;
+}
+
+a{
+    text-decoration:none;
+    color: #ffffff;
+}

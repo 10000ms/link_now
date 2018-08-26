@@ -1,0 +1,84 @@
+body{
+    background: url(http://p8th9ds1l.bkt.clouddn.com/timg1.jpg) no-repeat fixed center;
+    background-size: cover;
+}
+.content-div{
+    width: 450px;
+
+    margin-left:auto;
+    margin-right:auto;
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translateY(-50%) translateX(-50%);
+}
+.content{
+
+    width:100%;
+    box-shadow: 0 0 5px 5px #f0f0f0;
+    padding: 15px;
+    border-radius: 15px;
+}
+
+.content::after {
+    content: '';
+    position: fixed;
+
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    z-index: -1;
+    -webkit-filter: blur(15px);
+    filter: blur(15px);
+    background: hsla(0, 0%, 100%, 0.29);
+}
+
+form{
+    line-height: 2.5;
+}
+label.control-label{
+    font-size: 20px;
+    color: #ffffff;
+}
+input.form-control{
+    background-color: rgba(255, 255, 255, 0.55);
+    width:400px;
+}
+input.btn{
+    width:150px;
+    margin-left:125px;
+    margin-top:15px;
+    margin-bottom: 20px;
+    background-color: rgba(18, 63, 128, 0.37);
+    font-size: 14px;
+    color:#FFFFFF;
+}
+
+input.btn:hover{
+    background-color: rgba(18, 63, 128, 0.7);
+    color: #a6a6a6;
+}
+
+::-webkit-input-placeholder { /* WebKit browsers */
+    font-size:5px;
+    color: rgb(255, 255, 255);
+    letter-spacing:2px;
+}
+::-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    font-size:5px;
+    color: rgb(255, 255, 255);
+    letter-spacing:2px;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    font-size:5px;
+    color: rgb(255, 255, 255);
+    letter-spacing:2px;
+}
+::-ms-input-placeholder { /* Internet Explorer 10+ */
+    font-size:5px;
+    color: rgb(255, 255, 255);
+    letter-spacing:2px;
+}

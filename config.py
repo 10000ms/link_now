@@ -17,7 +17,7 @@ BASE_DIR = os.path.dirname(__file__)
 
 # server options
 options = {
-    "port": 8015,
+    "port": 8018,
 }
 
 # server settings
@@ -61,3 +61,8 @@ aiohttp_mongodb_unit = {
     'host': 'localhost',
     'port': 9988,
 }
+
+trust_list = [
+    '127.0.0.1',
+    'localhost',
+]

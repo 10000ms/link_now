@@ -8,109 +8,75 @@
     <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <style>
-        body{
-            background-color: #9d9d9d;
-        }
-        .now_user{
-            padding: 20px;
-            background-color: #ffffff;
-            width: 900px;
-            min-height: 200px;
-            margin-top: 10px;
-            margin-left: auto;
-            margin-right: auto;
-            border:2px solid #dddddd;
-            border-radius:15px;
-        }
-        .main{
-            padding: 20px;
-            background-color: #ffffff;
-            width: 900px;
-            margin-top: 10px;
-            margin-left: auto;
-            margin-right: auto;
-            border:2px solid #dddddd;
-            border-radius:15px;
-        }
-        .input-div{
-            border-top:1px solid #dddddd;
-            width: 80%;
-            margin-right: auto;
-            margin-left: auto;
-            padding: 20px;
-        }
-        input#user{
-            width: 30%;
-            height: 40px;
-        }
-        input#msg{
-            width: 50%;
-            height: 40px;
-        }
-        .btn{
-            font-weight: bolder;
-            font-size: 16px;
-            font-family: "Microsoft YaHei";
-            height: 40px;
-            width: 18%;
-        }
-
-        #contents{
-            height:500px;
-            overflow:auto;
-        }
-
-        ::-webkit-input-placeholder { /* WebKit browsers */
-            font-size:5px;
-            color:#D0D0D0;
-            letter-spacing:2px;
-        }
-        ::-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-            font-size:5px;
-            color:#D0D0D0;
-            letter-spacing:2px;
-        }
-        ::-moz-placeholder { /* Mozilla Firefox 19+ */
-            font-size:5px;
-            color:#D0D0D0;
-            letter-spacing:2px;
-        }
-        ::-ms-input-placeholder { /* Internet Explorer 10+ */
-            font-size:5px;
-            color:#D0D0D0;
-            letter-spacing:2px;
-        }
-    </style>
+    <link href="/static/css/chat_room.css" rel="stylesheet">
 </head>
 <body>
-<div><p class="now_user">1111</p></div>
+    <div class="hidden-info" hidden="hidden">
+        <p id="id-p-chat-url">{{chat_url}}</p>
+        <p id="id-user-account">{{account}}</p>
+        <p id="id-user-username">{{username}}</p>
+    </div>
     <div class="main">
-        <div id="contents"></div>
-        <div class="input-div">
-            <input id="user" placeholder="目标用户，空白为全部"/>
-            <input id="msg" placeholder="信息"/>
-            <a href="javascript:;" onclick="sendMsg()"><button class="btn btn-default">发送</button></a>
+        <div class="relationship-div">
+            <div class="title-div">
+                <span>联系人</span>
+            </div>
+            <ul class="memberTab">
+                <li id="id-memberTab-friend">好友</li>
+                <li id="id-memberTab-group">群</li>
+                <li id="id-memberTab-all" class="active">大厅</li>
+            </ul>
+            <div class="member-item"></div>
+
+            <div class="footer">
+                <ul class="relationship-footer">
+                    <li id="id-footer-add-friend">
+                        <div class="icon"></div>
+                        <span>添加好友</span>
+                    </li>
+                    <li id="id-footer-add-group">
+                        <div class="icon"></div>
+                        <span>添加群聊</span>
+                    </li>
+                    <li id="id-footer-create-group">
+                        <div class="icon"></div>
+                        <span>创建群聊</span>
+                    </li>
+                    <li id="id-footer-config">
+                        <div class="icon"></div>
+                        <span>设置</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="contact-div">
+            <div class="title-div">
+                <span id="id-title-name">大厅</span>
+                <span id="id-title-id" hidden="hidden">1</span>
+                <span id="id-title-type" hidden="hidden">3</span>
+            </div>
+            <div class="message-div">
+                <div class="total-message">
+
+                </div>
+            </div>
+            <div class="footer">
+                <textarea id="id-user-message"></textarea>
+                <button id="id-btn-send-user-message">发送</button>
+            </div>
         </div>
     </div>
 
-    <script type="text/javascript">
-        var ws = new WebSocket("{{ chat_url }}");
-        ws.onmessage = function(e) {
-            var get_msg_obj = JSON.parse(e.data);
-            if(get_msg_obj.info == "info"){
-                $("#contents").append("<p>" + get_msg_obj.msg + "</p>");
-            }else if(get_msg_obj.info == "now_user"){
-                $(".now_user").text(get_msg_obj.msg);
-            }
-        };
 
-        function sendMsg() {
-            var msgObj = {user:$("#user").val(), msg:$("#msg").val()};
-            var msg = JSON.stringify(msgObj);
-            ws.send(msg);
-            $("#msg").val("");
-        }
-    </script>
+
 </body>
+<script src="/static/js/utils.js"></script>
+<script src="/static/js/template.js"></script>
+<script src="/static/js/userEvent.js"></script>
+<script src="/static/js/user.js"></script>
+<script src="/static/js/webSocketEvent.js"></script>
+<script src="/static/js/webSocketClient.js"></script>
+<script src="/static/js/surface.js"></script>
+<script src="/static/js/main.js"></script>
 </html>
