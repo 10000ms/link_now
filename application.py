@@ -13,8 +13,6 @@
 import os
 
 import tornado.web
-from mongo_app import MongoConn
-from redis_app import RedisConn
 
 import view
 import config
@@ -39,16 +37,3 @@ class Application(tornado.web.Application):
              }),
         ]
         super(Application, self).__init__(handler, **config.settings)
-        self.mongodb = MongoConn(
-            config.mongodb['host'],
-            config.mongodb['port'],
-            config.mongodb['db_name'],
-            config.mongodb['username'],
-            config.mongodb['password'],
-
-        ).db
-        self.redis = RedisConn(
-            config.redis['host'],
-            config.redis['port'],
-            config.redis['password'],
-        ).db

@@ -38,7 +38,8 @@ async def get_mongo_fetch_data(data, url):
         + str(config.aiohttp_mongodb_unit['port']) \
         + url
     res = await get_fetch_data(data, mongo_url)
-    return res.body
+    str_res = res.body
+    return str_res.decode()
 
 
 async def get_redis_fetch_data(data, url):
@@ -55,7 +56,8 @@ async def get_redis_fetch_data(data, url):
         + str(config.aiohttp_redis_unit['port']) \
         + url
     res = await get_fetch_data(data, redis_url)
-    return res.body
+    str_res = res.body
+    return str_res.decode()
 
 
 async def get_fetch_data(data, url):

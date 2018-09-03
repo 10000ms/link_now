@@ -18,14 +18,16 @@ class UsersMessage(RequestHandler):
 
     def send_data_to_users(self, account: list, data):
         Log.logger.info('群发信息目标帐号: ' + str(account) + ' 群发信息: ' + str(data))
-        print([x.account for x in self.users])
         for user in self.users:
             if user.account in account:
                 user.write_message(json.dumps(data))
 
     def post(self):
+        Log.logger.info('收到来自: ' + str(self.request.remote_ip) + ' 的信息')
         if self.request.remote_ip in config.trust_list:
-            json_data = json.loads(self.request.body)
+            Log.logger.info('来自: ' + str(self.request.remote_ip) + ' 的信息是合法信息')
+            request_body = self.request.body
+            json_data = json.loads(request_body.decode())
             self.send_data_to_users(json_data['g_id'], json_data)
             self.write('ok')
         else:
@@ -46,8 +48,11 @@ class UserMessage(RequestHandler):
                 return user.write_message(json.dumps(data))
 
     def post(self):
+        Log.logger.info('收到来自: ' + str(self.request.remote_ip) + ' 的信息')
         if self.request.remote_ip in config.trust_list:
-            json_data = json.loads(self.request.body)
+            Log.logger.info('来自: ' + str(self.request.remote_ip) + ' 的信息是合法信息')
+            request_body = self.request.body
+            json_data = json.loads(request_body.decode())
             self.send_data_to_user(json_data['g_id'], json_data)
             self.write('ok')
         else:

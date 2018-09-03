@@ -96,7 +96,7 @@ class ChatHandler(WebSocketHandler):
         """
         self.logger.info('message_websocket: ' + self.account + str(message))
         # 加载JSON信息
-        message: dict = json.loads(message)
+        message = json.loads(message)
         # 普通信息
         if message['method'] == 'message':
             message_data = {
