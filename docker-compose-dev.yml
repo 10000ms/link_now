@@ -1,0 +1,93 @@
+version: '3'
+
+services:
+
+  webapp:
+    build:
+      context: backend
+      dockerfile: Dockerfile-dev
+    depends_on:
+      - redis
+      - mongo
+    volumes:
+      - ./backend/:/backend
+      - ./common_file/:/common_file
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '10'
+    command:
+      - /bin/sh
+      - -c
+      - |
+        # 确定服务启动
+        python3 /common_file/wait-for-it.py mongo:27017 redis:6379 python3 manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+
+  aiohttp_mongdb_unit:
+    build:
+      context: backend
+      dockerfile: Dockerfile-dev
+    depends_on:
+      - redis
+      - mongo
+    volumes:
+      - ./aiohttp_mongdb_unit/:/backend
+      - ./common_file/:/common_file
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '10'
+    command:
+      - /bin/sh
+      - -c
+      - |
+        # 确定服务启动
+        python3 /common_file/wait-for-it.py mongo:27017 redis:6379 python3 manage.py runserver 0.0.0.0:8000
+
+  aiohttp_redis_unit:
+    build:
+      context: backend
+      dockerfile: Dockerfile-dev
+    depends_on:
+      - redis
+      - mongo
+    volumes:
+      - ./aiohttp_redis_unit/:/backend
+      - ./common_file/:/common_file
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '10'
+    command:
+      - /bin/sh
+      - -c
+      - |
+        # 确定服务启动
+        python3 /common_file/wait-for-it.py mongo:27017 redis:6379 python3 manage.py runserver 0.0.0.0:8000
+
+  redis:
+    image: "redis:5.0-alpine"
+    ports:
+      - "36379:6379"
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '10'
+
+  mongo:
+    image: mongo:4.1.13
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 123456
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '10'
