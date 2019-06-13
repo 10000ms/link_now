@@ -1,15 +1,21 @@
-var log = console.log.bind(console)
+// log方法
+const log = console.log.bind(console, new Date().toLocaleString());
 
-var e = function(selector, parent=document) {
-    return parent.querySelector(selector)
-}
 
-var MessageScrollTop = function () {
-    var doc = e('.message-div')
+// 获取dom元素方法
+const e = function(selector, parent=document) {
+    return parent.querySelector(selector);
+};
+
+
+// 消息滚动
+const MessageScrollTop = function () {
+    const doc = e('.message-div');
     doc.scrollTop = doc.scrollHeight;
-}
+};
 
-var insertTemplate = function (doc, template) {
-    doc.innerHTML = template
-}
 
+// 插入模板方法
+const insertTemplate = function (doc, template) {
+    doc.innerHTML = template;
+};

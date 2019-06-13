@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-'''
+"""
     application
     ~~~~~~~~~
 
@@ -9,7 +9,7 @@
 
     :copyright: (c) 2018 by Victor Lai.
 
-'''
+"""
 import os
 
 import tornado.web

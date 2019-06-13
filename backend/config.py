@@ -17,19 +17,19 @@ BASE_DIR = os.path.dirname(__file__)
 
 # server options
 options = {
-    "port": 4000,
+    'port': 4000,
 }
 
 # server settings
 settings = {
-    "debug": False,   # debug模式
+    'debug': False,   # debug模式
 
-    "static_path": os.path.join(BASE_DIR, "static"),  # 静态文件地址
-    "template_path": os.path.join(BASE_DIR, "template"),  # 模板文件地址
+    'static_path': os.path.join(BASE_DIR, 'static'),  # 静态文件地址
+    'template_path': os.path.join(BASE_DIR, 'template'),  # 模板文件地址
 
-    "cookie_secret": "7BEnV14KSXKwl0ag1f/MzM0g4xXuDknkkTkz4LRFUUo=",  # 安全cookie秘钥，跨站攻击防护必须
-    "xsrf_cookies": True,  # 跨站攻击防护
-    "local_url": "47.106.211.149"
+    'cookie_secret': '7BEnV14KSXKwl0ag1f/MzM0g4xXuDknkkTkz4LRFUUo=',  # 安全cookie秘钥，跨站攻击防护必须
+    'xsrf_cookies': True,  # 跨站脚本攻击防护
+    'local_url': '47.106.211.149'
 }
 
 

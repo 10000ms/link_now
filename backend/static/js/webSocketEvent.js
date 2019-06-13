@@ -1,88 +1,100 @@
-var sendMessageEvent = function (websocket) {
-    var b = e('#id-btn-send-user-message')
-    var textarea = e('#id-user-message')
-    b.addEventListener('click', function(event) {
-        var thisOneMessage = e('#id-user-message').value
-        var titleId = e('#id-title-id').innerText
-        var titleType = e('#id-title-type').innerText
-        var messageJson = {
+// 发送信息方法
+const sendMessageEvent = function (websocket) {
+    let b = e('#id-btn-send-user-message');
+    let textarea = e('#id-user-message');
+    // 绑定方法
+    b.addEventListener('click', function() {
+        let thisOneMessage = e('#id-user-message').value;
+        // 发送对象的id
+        let titleId = e('#id-title-id').innerText;
+        // 消息类型
+        let titleType = e('#id-title-type').innerText;
+        let messageJson = {
             method: 'message',
             type: titleType,
             id: titleId,
             message: thisOneMessage,
-        }
-        var jsonData = JSON.stringify(messageJson)
+        };
+        let jsonData = JSON.stringify(messageJson);
         // 发送请求
-        websocket.send(jsonData)
+        websocket.send(jsonData);
 
-        if (titleType == config.friend) {
-            var message = {
+        if (titleType === config.friend) {
+            let message = {
                 account: titleId,
                 name: thisUser.username,
                 message: thisOneMessage,
 
-            }
-            thisUser.addMessage(titleType, message)
+            };
+            thisUser.addMessage(titleType, message);
         }
 
-        textarea.value = ''
-    })
-}
+        textarea.value = '';
+    });
+};
 
-var bindAddFriendEvent = function (websocket) {
-    var b = e('#id-footer-add-friend')
-    b.addEventListener('click', function(event){
-        var account=prompt('请输入要添加的好友帐号'); // 弹出input框
+
+// 添加好友信息
+const bindAddFriendEvent = function (websocket) {
+    let b = e('#id-footer-add-friend');
+    b.addEventListener('click', function(){
+        // 弹出input框
+        let account = prompt('请输入要添加的好友帐号');
         if (account != null) {
-            var messageJson = {
+            let messageJson = {
                 method: 'add_friend',
                 id: account,
-            }
-            var jsonData = JSON.stringify(messageJson)
+            };
+            let jsonData = JSON.stringify(messageJson);
             // 发送请求
-            websocket.send(jsonData)
+            websocket.send(jsonData);
         }
-    })
-}
+    });
+};
 
 
-var bindAddGroupEvent = function (websocket) {
-    var b = e('#id-footer-add-group')
-    b.addEventListener('click', function(event){
-        var groupId=prompt('请输入要添加的群ID'); // 弹出input框
+// 加群
+const bindAddGroupEvent = function (websocket) {
+    let b = e('#id-footer-add-group');
+    b.addEventListener('click', function(){
+        let groupId=prompt('请输入要添加的群ID'); // 弹出input框
         if (groupId != null) {
-            var messageJson = {
+            let messageJson = {
                 method: 'add_group',
                 id: groupId,
-            }
-            var jsonData = JSON.stringify(messageJson)
+            };
+            let jsonData = JSON.stringify(messageJson);
             // 发送请求
-            websocket.send(jsonData)
+            websocket.send(jsonData);
         }
-    })
-}
+    });
+};
 
 
-var bindCreateGroupEvent = function (websocket) {
-    var b = e('#id-footer-create-group')
-    b.addEventListener('click', function(event){
-        var groupName=prompt('请输入要创建的群名') // 弹出input框
+// 建群
+const bindCreateGroupEvent = function (websocket) {
+    let b = e('#id-footer-create-group');
+    b.addEventListener('click', function(){
+        // 弹出input框
+        let groupName=prompt('请输入要创建的群名');
         if (groupName != null) {
-            log(groupName)
-            var messageJson = {
+            log(groupName);
+            let messageJson = {
                 method: 'create_group',
                 name: groupName,
-            }
-            var jsonData = JSON.stringify(messageJson)
+            };
+            let jsonData = JSON.stringify(messageJson);
             // 发送请求
-            websocket.send(jsonData)
+            websocket.send(jsonData);
         }
-    })
-}
+    });
+};
 
-var bindconfigEvent = function (websocket) {
-    var b = e('#id-footer-config')
-    b.addEventListener('click', function(event){
-        alert('开发中')
-    })
-}
+
+// 设置
+const bindConfigEvent = function () {
+    let b = e('#id-footer-config');
+    b.addEventListener('click', function(){
+        alert('开发中');
+    });
+};
