@@ -9,15 +9,9 @@ class ProductionConfig:
 class DevelopmentConfig:
 
     SERVER_CONFIG = {
-        'host': '127.0.0.1',
+        'host': '0.0.0.0',
         'port': '8081',
     }
-
-    TRUST_LIST = [
-        '127.0.0.1',
-        'localhost',
-        '47.106.211.149',
-    ]
 
     SERVER_LOGGER_NAME = 'server.'
 
@@ -25,7 +19,7 @@ class DevelopmentConfig:
 
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-    REDIS_HOST = '127.0.0.1'
+    REDIS_HOST = 'redis'
 
     REDIS_PORT = '6379'
 
@@ -42,7 +36,7 @@ class DevelopmentConfig:
     SESSION_EXPIRE = 180
 
     MONGODB_URL = {
-        'host': '127.0.0.1',
+        'host': 'aiohttp_mongdb_unit',
         'port': '9988',
     }
 

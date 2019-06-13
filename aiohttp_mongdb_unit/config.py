@@ -6,24 +6,18 @@ class ProductionConfig:
 class DevelopmentConfig:
 
     SERVER_CONFIG = {
-        'host': '127.0.0.1',
+        'host': '0.0.0.0',
         'port': '9988',
     }
-
-    TRUST_LIST = [
-        '127.0.0.1',
-        'localhost',
-        '47.106.211.149',
-    ]
 
     SERVER_LOGGER_NAME = 'server.'
 
     MONGODB = {
-        'host': 'localhost',
+        'host': 'mongo',
         'port': 27017,
         'db_name': 'user',
-        'username': None,
-        'password': None
+        'username': 'root',
+        'password': '123456',
     }
 
 

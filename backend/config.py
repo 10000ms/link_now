@@ -17,7 +17,7 @@ BASE_DIR = os.path.dirname(__file__)
 
 # server options
 options = {
-    'port': 4000,
+    'port': 9040,
 }
 
 # server settings
@@ -29,18 +29,18 @@ settings = {
 
     'cookie_secret': '7BEnV14KSXKwl0ag1f/MzM0g4xXuDknkkTkz4LRFUUo=',  # 安全cookie秘钥，跨站攻击防护必须
     'xsrf_cookies': True,  # 跨站脚本攻击防护
-    'local_url': '47.106.211.149'
+    'local_url': '47.106.211.149',
 }
 
 
 aiohttp_redis_unit = {
-    'host': 'localhost',
+    'host': 'aiohttp_redis_unit',
     'port': 8081,
 }
 
 
 aiohttp_mongodb_unit = {
-    'host': 'localhost',
+    'host': 'aiohttp_mongodb_unit',
     'port': 9988,
 }
 

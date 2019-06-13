@@ -9,6 +9,8 @@ services:
     depends_on:
       - redis
       - mongo
+      - aiohttp_mongdb_unit
+      - aiohttp_redis_unit
     volumes:
       - ./backend/:/backend
       - ./common_file/:/common_file
@@ -22,13 +24,13 @@ services:
       - -c
       - |
         # 确定服务启动
-        python3 /common_file/wait-for-it.py mongo:27017 redis:6379 python3 manage.py runserver 0.0.0.0:8000
+        python3 /common_file/wait-for-it.py mongo:27017 redis:6379 aiohttp_redis_unit:8081 aiohttp_mongdb_unit:9988 python3 server.py
     ports:
-      - "8000:8000"
+      - "9040:9040"
 
   aiohttp_mongdb_unit:
     build:
-      context: backend
+      context: aiohttp_mongdb_unit
       dockerfile: Dockerfile-dev
     depends_on:
       - redis
@@ -46,11 +48,11 @@ services:
       - -c
       - |
         # 确定服务启动
-        python3 /common_file/wait-for-it.py mongo:27017 redis:6379 python3 manage.py runserver 0.0.0.0:8000
+        python3 /common_file/wait-for-it.py mongo:27017 redis:6379 python3 main.py
 
   aiohttp_redis_unit:
     build:
-      context: backend
+      context: aiohttp_redis_unit
       dockerfile: Dockerfile-dev
     depends_on:
       - redis
@@ -68,7 +70,7 @@ services:
       - -c
       - |
         # 确定服务启动
-        python3 /common_file/wait-for-it.py mongo:27017 redis:6379 python3 manage.py runserver 0.0.0.0:8000
+        python3 /common_file/wait-for-it.py mongo:27017 redis:6379 python3 main.py
 
   redis:
     image: "redis:5.0-alpine"
@@ -81,8 +83,7 @@ services:
         max-file: '10'
 
   mongo:
-    image: mongo:4.1.13
-    restart: always
+    image: mongo:3.4
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: 123456

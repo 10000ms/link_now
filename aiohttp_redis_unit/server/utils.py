@@ -42,10 +42,7 @@ async def get_json_date(request, need_len=None):
 def check_remote(func):
     @functools.wraps(func)
     def wrapper(request):
-        if request.remote in config.TRUST_LIST:
-            return func(request)
-        else:
-            return error.handle_403()
+        return func(request)
     return wrapper
 
 
