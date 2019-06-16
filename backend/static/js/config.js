@@ -1,8 +1,8 @@
 // 界面配置
 const config = {
-    userIconUrl: 'http://p8th9ds1l.bkt.clouddn.com/user.png',
-    loginIconUrl: 'http://p8th9ds1l.bkt.clouddn.com/login_user.png',
-    groupIconUrl: 'http://p8th9ds1l.bkt.clouddn.com/group.png',
+    userIconUrl: '/static/img/user.png',
+    loginIconUrl: '/static/img/login_user.png',
+    groupIconUrl: '/static/img/group.png',
     friend: 1,
     group: 2,
     all: 3,

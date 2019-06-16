@@ -1,5 +1,5 @@
 body {
-    background: url(http://p8th9ds1l.bkt.clouddn.com/chat_room_bg.jpg);
+    background: url("/static/img/chat_room_bg.jpg");
     width: 100%;
     height: 100%;
     position: absolute;
@@ -87,16 +87,16 @@ ul{
     border-right: none;
 }
 #id-footer-add-friend .icon{
-    background-image: url(http://p8th9ds1l.bkt.clouddn.com/user.png) ;
+    background-image: url("/static/img/user.png") ;
 }
 #id-footer-add-group .icon{
-    background-image: url(http://p8th9ds1l.bkt.clouddn.com/tab_group.png) ;
+    background-image: url("/static/img/tab_group.png") ;
 }
 #id-footer-create-group .icon{
-    background-image: url(http://p8th9ds1l.bkt.clouddn.com/tab_group.png) ;
+    background-image: url("/static/img/tab_group.png") ;
 }
 #id-footer-config .icon{
-    background-image: url(http://p8th9ds1l.bkt.clouddn.com/config.png) ;
+    background-image: url("/static/img/config.png") ;
 }
 #id-user-message{
     border-radius: 5px;
