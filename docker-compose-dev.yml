@@ -83,10 +83,13 @@ services:
         max-file: '10'
 
   mongo:
-    image: mongo:3.4
+    image: mongo:3.6
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: 123456
+      MONGO_INITDB_DATABASE: user
+    volumes:
+      - ./volumn/mongo:/data/db
     logging:
       driver: json-file
       options:

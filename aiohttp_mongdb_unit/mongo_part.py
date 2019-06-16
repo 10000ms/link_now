@@ -12,9 +12,9 @@ class MongoConn:
         self.password = password
 
         # connect db
-        self.conn = pymongo.MongoClient(self.host, self.port)
-        self.db = self.conn[self.db_name]  # connect db
-        if self.username and self.password:
-            self.connected = self.db.authenticate(self.username, self.password)
-        else:
-            self.connected = True
+        self.db = pymongo.MongoClient(
+            'mongodb://{}:{}/'.format(self.host, self.port),
+            username=self.username,
+            password=self.password,
+            authSource=self.db_name)
+        self.connected = True
