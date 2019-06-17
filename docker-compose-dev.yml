@@ -6,12 +6,13 @@ services:
     build:
       context: backend
       dockerfile: Dockerfile-dev
-    container_name: webapp
+    networks:
+      - link-now-network
     depends_on:
       - redis
       - mongo
-      - aiohttp_mongdb_unit
-      - aiohttp_redis_unit
+      - aiohttp-mongdb-unit
+      - aiohttp-redis-unit
     volumes:
       - ./backend/:/backend
       - ./common_file/:/common_file
@@ -25,14 +26,16 @@ services:
       - -c
       - |
         # 确定服务启动
-        python3 /common_file/wait-for-it.py mongo:27017 redis:6379 aiohttp_redis_unit:8081 aiohttp_mongdb_unit:9988 python3 server.py
+        python3 /common_file/wait-for-it.py mongo:27017 redis:6379 aiohttp-redis-unit:8081 aiohttp-mongdb-unit:9988 python3 server.py
     ports:
       - "9040:9040"
 
-  aiohttp_mongdb_unit:
+  aiohttp-mongdb-unit:
     build:
       context: aiohttp_mongdb_unit
       dockerfile: Dockerfile-dev
+    networks:
+      - link-now-network
     depends_on:
       - redis
       - mongo
@@ -51,10 +54,12 @@ services:
         # 确定服务启动
         python3 /common_file/wait-for-it.py mongo:27017 redis:6379 python3 main.py
 
-  aiohttp_redis_unit:
+  aiohttp-redis-unit:
     build:
       context: aiohttp_redis_unit
       dockerfile: Dockerfile-dev
+    networks:
+      - link-now-network
     depends_on:
       - redis
       - mongo
@@ -75,6 +80,8 @@ services:
 
   redis:
     image: "redis:5.0-alpine"
+    networks:
+      - link-now-network
     ports:
       - "36379:6379"
     logging:
@@ -85,10 +92,14 @@ services:
 
   mongo:
     image: mongo:3.6
+    networks:
+      - link-now-network
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: 123456
       MONGO_INITDB_DATABASE: user
+    volumes:
+      - ./volumn/mongo:/data/db
     logging:
       driver: json-file
       options:
@@ -97,13 +108,19 @@ services:
 
   nginx:
     image: nginx:1.17
+    networks:
+      - link-now-network
     depends_on:
       - redis
       - mongo
-      - aiohttp_mongdb_unit
-      - aiohttp_redis_unit
+      - aiohttp-mongdb-unit
+      - aiohttp-redis-unit
       - webapp
     volumes:
       - ./volume/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     ports:
       - "8899:80"
+
+networks:
+   link-now-network:
+     driver: bridge

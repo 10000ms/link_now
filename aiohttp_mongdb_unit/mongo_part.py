@@ -17,4 +17,5 @@ class MongoConn:
             username=self.username,
             password=self.password,
             authSource=self.db_name)
+        self.db = self.db[self.db_name]
         self.connected = True

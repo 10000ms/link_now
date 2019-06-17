@@ -34,13 +34,13 @@ settings = {
 
 
 aiohttp_redis_unit = {
-    'host': 'aiohttp_redis_unit',
+    'host': 'aiohttp-redis-unit',
     'port': 8081,
 }
 
 
 aiohttp_mongodb_unit = {
-    'host': 'aiohttp_mongodb_unit',
+    'host': 'aiohttp-mongdb-unit',
     'port': 9988,
 }
 
