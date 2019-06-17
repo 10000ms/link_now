@@ -20,5 +20,5 @@ db.sqlite3
 
 volume/mongo/*
 
-! .gitkeep
-! .gitignore
+!.gitkeep
+!.gitignore
