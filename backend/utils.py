@@ -37,6 +37,7 @@ async def get_mongo_fetch_data(data, url):
         + ':' \
         + str(config.aiohttp_mongodb_unit['port']) \
         + url
+    print('get_mongo_fetch_data', mongo_url)
     res = await get_fetch_data(data, mongo_url)
     str_res = res.body
     return str_res.decode()

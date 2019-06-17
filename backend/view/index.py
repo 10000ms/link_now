@@ -35,11 +35,6 @@ class StaticFileHandler(tornado.web.StaticFileHandler):
 
 class LoginHandler(RequestHandler):
 
-    def __init__(self, *args, **kwargs):
-        super(LoginHandler, self).__init__(*args, **kwargs)
-        self.db_checker = self.application.mongodb['user']
-        self.redis = self.application.redis
-
     def get(self, *args, **kwargs):
         messages = []
         url = RequestHandler.reverse_url(self, 'login')
@@ -110,11 +105,6 @@ class LoginHandler(RequestHandler):
 
 
 class RegisterHandler(RequestHandler):
-
-    def __init__(self, *args, **kwargs):
-        super(RegisterHandler, self).__init__(*args, **kwargs)
-        self.db_checker = self.application.mongodb['user']
-        self.redis = self.application.redis
 
     def get(self, *args, **kwargs):
         messages = []

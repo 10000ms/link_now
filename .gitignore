@@ -17,3 +17,8 @@ venv
 db.sqlite3
 *.log
 .qiniu_pythonsdk_hostscache.json
+
+volume/mongo/*
+
+! .gitkeep
+! .gitignore

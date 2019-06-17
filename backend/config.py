@@ -22,7 +22,7 @@ options = {
 
 # server settings
 settings = {
-    'debug': False,   # debug模式
+    'debug': True,   # debug模式
 
     'static_path': os.path.join(BASE_DIR, 'static'),  # 静态文件地址
     'template_path': os.path.join(BASE_DIR, 'template'),  # 模板文件地址
@@ -47,5 +47,6 @@ aiohttp_mongodb_unit = {
 trust_list = [
     '127.0.0.1',
     'localhost',
-    '47.106.211.149',
+    'aiohttp_mongodb_unit',
+    'aiohttp_redis_unit',
 ]
