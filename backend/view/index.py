@@ -210,6 +210,8 @@ class Support(object):
         :param old_pw: 数据库中用户密码
         :return: 正确为True，错误为False
         """
+        if not old_pw:
+            return False
         num = old_pw.split('|', 1)[0]
         older = old_pw.split('|', 1)[1]
         sha256_maker = sha256()

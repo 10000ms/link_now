@@ -94,10 +94,8 @@ services:
     image: mongo:3.6
     networks:
       - link-now-network
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: 123456
-      MONGO_INITDB_DATABASE: user
+    command:
+      - --dbpath=/data/db
     volumes:
       - ./volume/mongo:/data/db
     logging:

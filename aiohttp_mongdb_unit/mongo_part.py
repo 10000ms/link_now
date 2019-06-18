@@ -13,9 +13,7 @@ class MongoConn:
 
         # connect db
         self.db = pymongo.MongoClient(
-            'mongodb://{}:{}/'.format(self.host, self.port),
-            username=self.username,
-            password=self.password,
-            authSource=self.db_name)
+            '{}:{}'.format(self.host, self.port),
+        )
         self.db = self.db[self.db_name]
         self.connected = True

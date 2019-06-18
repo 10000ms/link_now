@@ -25,10 +25,16 @@ class UserHandler:
     @classmethod
     def login(cls, account):
         get_user = cls.user_db.find_one({'account': account})
-        res = {
-            'password': get_user['password'],
-            'username': get_user['username'],
-        }
+        if get_user:
+            res = {
+                'password': get_user.get('password', None),
+                'username': get_user.get('username', None),
+            }
+        else:
+            res = {
+                'password': None,
+                'username': None,
+            }
         return res
 
     @classmethod

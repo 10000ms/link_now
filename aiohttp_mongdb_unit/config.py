@@ -16,8 +16,8 @@ class DevelopmentConfig:
         'host': 'mongo',
         'port': 27017,
         'db_name': 'user',
-        'username': 'root',
-        'password': '123456',
+        'username': '',
+        'password': '',
     }
 
 
