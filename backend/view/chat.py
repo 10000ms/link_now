@@ -38,18 +38,15 @@ class ChatRoomHandler(RequestHandler):
         session_check_data = {
             'account': account,
             'session': user_token,
-            'remote': 'http://' + config.settings['local_url'] + ':' + str(config.options['port'])
+            'remote': 'http://{}'.format(self.request.host),
         }
         res = await get_redis_fetch_data(session_check_data, '/session/check_session')
         status = json.loads(res)
         status = status['status']
         if status == 'ok':
             # 生成聊天室WebSocket地址
-            chat_url = 'ws://' \
-                       + config.settings['local_url'] \
-                       + ':' \
-                       + str(config.options['port']) \
-                       + RequestHandler.reverse_url(self, 'chat_room')
+            # 因为暂时不使用分布式，所以聊天室地址固定为和web app一个地址
+            chat_url = 'ws://{}{}'.format(self.request.host, RequestHandler.reverse_url(self, 'chat_room'))
             return self.render('chat/chat_room.html', chat_url=chat_url, account=account, username=username)
         else:
             url = RequestHandler.reverse_url(self, 'login')

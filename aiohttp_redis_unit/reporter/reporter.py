@@ -38,7 +38,7 @@ def get_url(remote, url):
 
 
 async def fetch(session, url, data):
-    ReporterComponent.logger.info('发生post：' + str(url) + str(data))
+    ReporterComponent.logger.info('发送post：' + str(url) + str(data))
     async with session.post(url, data=data) as response:
         return await response.text()
 
