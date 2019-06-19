@@ -36,7 +36,7 @@ class DevelopmentConfig:
     SESSION_EXPIRE = 180
 
     MONGODB_URL = {
-        'host': 'aiohttp_mongdb_unit',
+        'host': 'aiohttp-mongdb-unit',
         'port': '9988',
     }
 

@@ -80,7 +80,6 @@ const clientWebSocket = function (wsUrl) {
 // websocket的入口
 const web_socket_main = function() {
     // 从渲染的页面获取websocket的地址
-    // TODO: 改为通过ajax获取
     const wsUrl = e('#id-p-chat-url').innerText;
     // 使用这个url启动websocket客户端
     clientWebSocket(wsUrl);

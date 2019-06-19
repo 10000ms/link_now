@@ -11,7 +11,7 @@ const sendMessageEvent = function (websocket) {
         let titleType = e('#id-title-type').innerText;
         let messageJson = {
             method: 'message',
-            type: titleType,
+            type: parseInt(titleType),
             id: titleId,
             message: thisOneMessage,
         };
@@ -78,7 +78,6 @@ const bindCreateGroupEvent = function (websocket) {
         // 弹出input框
         let groupName=prompt('请输入要创建的群名');
         if (groupName != null) {
-            log(groupName);
             let messageJson = {
                 method: 'create_group',
                 name: groupName,

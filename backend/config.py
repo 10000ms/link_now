@@ -37,6 +37,8 @@ aiohttp_redis_unit = {
     'port': 8081,
 }
 
+internal_host = 'webapp:9040'
+
 
 aiohttp_mongodb_unit = {
     'host': 'aiohttp-mongdb-unit',
@@ -46,6 +48,6 @@ aiohttp_mongodb_unit = {
 trust_list = [
     '127.0.0.1',
     'localhost',
-    'aiohttp_mongodb_unit',
-    'aiohttp_redis_unit',
+    'aiohttp-mongodb-unit',
+    'aiohttp-redis-unit',
 ]

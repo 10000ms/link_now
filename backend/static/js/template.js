@@ -16,8 +16,6 @@ const memberItemTemplate = function (type, memberList) {
         for (let i = 0; i < memberList.length; i++) {
             let flag = false;
             for (let y = 0; y < thisUser.loginFriend.length; y++) {
-                log(thisUser.loginFriend);
-                log(memberList);
                 if (thisUser.loginFriend[y].id === memberList[i].id) {
                     flag = true;
                 }

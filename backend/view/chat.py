@@ -38,7 +38,7 @@ class ChatRoomHandler(RequestHandler):
         session_check_data = {
             'account': account,
             'session': user_token,
-            'remote': 'http://{}'.format(self.request.host),
+            'remote': 'http://{}'.format(config.internal_host),
         }
         res = await get_redis_fetch_data(session_check_data, '/session/check_session')
         status = json.loads(res)

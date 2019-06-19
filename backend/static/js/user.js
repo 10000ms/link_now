@@ -57,6 +57,7 @@ const userInfo = function () {
     let checkAndRenewMessage = function(type, id) {
         let titleId = e('#id-title-id').innerText;
         let titleType = e('#id-title-type').innerText;
+        titleType = parseInt(titleType);
         if (type === config.all && titleType === type) {
             renewMessageDiv();
         } else if (titleType === type && titleId === id) {

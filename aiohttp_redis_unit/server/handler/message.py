@@ -34,15 +34,6 @@ class MessageHandler:
                 'name': sender_name,
                 'message': message,
             }
-
-            # old version:
-            # json_message = {
-            #                 'sender': account,
-            #                 'id': type_id,
-            #                 'message': message,
-            #                 'message_type': get_message_type,
-            #             }
-
             json_message = json.dumps(json_message)
             cls.message_db.lpush(str(get_message_type), json_message)
             cls.Log.info(

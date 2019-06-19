@@ -24,14 +24,11 @@ class UsersMessage(RequestHandler):
 
     def post(self):
         Log.logger.info('收到来自: ' + str(self.request.remote_ip) + ' 的信息')
-        if self.request.remote_ip in config.trust_list:
-            Log.logger.info('来自: ' + str(self.request.remote_ip) + ' 的信息是合法信息')
-            request_body = self.request.body
-            json_data = json.loads(request_body.decode())
-            self.send_data_to_users(json_data['g_id'], json_data)
-            self.write('ok')
-        else:
-            self.write('error')
+        Log.logger.info('来自: ' + str(self.request.remote_ip) + ' 的信息是合法信息')
+        request_body = self.request.body
+        json_data = json.loads(request_body.decode())
+        self.send_data_to_users(json_data['g_id'], json_data)
+        self.write('ok')
 
     def check_xsrf_cookie(self):
         pass
@@ -49,14 +46,10 @@ class UserMessage(RequestHandler):
 
     def post(self):
         Log.logger.info('收到来自: ' + str(self.request.remote_ip) + ' 的信息')
-        if self.request.remote_ip in config.trust_list:
-            Log.logger.info('来自: ' + str(self.request.remote_ip) + ' 的信息是合法信息')
-            request_body = self.request.body
-            json_data = json.loads(request_body.decode())
-            self.send_data_to_user(json_data['g_id'], json_data)
-            self.write('ok')
-        else:
-            self.write('error')
+        request_body = self.request.body
+        json_data = json.loads(request_body.decode())
+        self.send_data_to_user(json_data['g_id'], json_data)
+        self.write('ok')
 
     def check_xsrf_cookie(self):
         pass

@@ -16,6 +16,7 @@ const renewMessageDiv = function () {
     let titleId = e('#id-title-id').innerText;
     let titleType = e('#id-title-type').innerText;
     let message = e('.total-message');
+    titleType = parseInt(titleType);
     if (titleType === config.friend) {
         let getMessage = findMessage(config.friend, titleId);
         let messageTemplate = MessageItemTemplate(config.friend, getMessage);
