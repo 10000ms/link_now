@@ -1,29 +1,51 @@
-# link_now 聊天室
-tornado框架的聊天网站
+# 基于tornado和原生js前端的demo项目：link_now 聊天室
 
-# 启动
-1.根据需求配置config.py文件
+项目展示地址：[link.tot.moe](http://link.tot.moe) （小水管服务器，首次打开会比较慢......）
 
-2.启动
+
+项目说明
+
+1. 项目使用前后端分离：前端使用原生的js；后端使用tornado，信息管理服务器使用aiohttp
+2. 使用MongoDB数据库进行数据的存储；使用Redis数据库提供消息处理任务队列
+3. 使用docker compose方便的进行部署和开发；使用nginx进行内部的反向代理，分离静态文件请求和api请求
+4. 后端使用tornado作为web后台。根据任务类型，web后台会将个人及群信息发送至MongoDB处理的服务器，进行持久化存储，而消息信息发送至Redis处理的服务器进行分发处理。Redis处理服务器会将信息依此发送会对应的web服务器再发送回客户端
+5. 可以使用nginx进行负载均衡设置，部署多台web后台服务器处理前端请求，和一台Redis处理的服务器统一处理消息请求，和一台MongoDB处理服务器统一处理个人及群信息请求
+6. 前端使用websocket与后端进行双向通信，并使用js实现信息管理器，不同的tab显示不同的信息
+
+
+## 图片
+
+1. 首页
+
+![](README/主页.png)
+
+2. 聊天室
+
+![](README/聊天室.png)
+
+### 部分功能展示
+
+1. 发送消息
+
+![](README/发送信息.gif)
+
+2. 添加好友
+
+![](README/添加好友.gif)
+
+3. 创建群
+
+![](README/创建群.gif)
+
+4. 切换tab
+
+![](README/切换tab.gif)
+
+
+## 运行说明
+
+1. 先在本地部署docker compose
+2. 运行
 ```
-python server.py
+docker-compose up
 ```
-# 需要数据库
-- Redis （记录当前用户登陆信息）
-- MongoDB （记录注册用户信息）
-
-# 部分界面截图
-
-![主页](https://note.youdao.com/yws/api/personal/file/C4C3ADB9863340A7ACB52AB2D24CDF86?method=download&shareKey=6918c133f42203868e1ab05680ffb775)
-
-![注册](https://note.youdao.com/yws/api/personal/file/22E53721DA8C4181B66EDC0C78890FC0?method=download&shareKey=ad1dbc4108f3705092d871a60f394cba)
-
-![登陆](https://note.youdao.com/yws/api/personal/file/55B4CB6D6C2F4907AA9422F5A80191EF?method=download&shareKey=f758b3f69bcfac6ae0aaf7569371a8db)
-
-![聊天室](https://note.youdao.com/yws/api/personal/file/152F03DC22F749B5A52FF7E6A07F1E97?method=download&shareKey=4ee9ffb44d59d09b01da9818f54d54b9)
-
-# requirements
-pymongo==3.6.1
-redis==2.10.6
-tornado==5.0.2
-

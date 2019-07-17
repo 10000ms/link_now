@@ -3,22 +3,122 @@ version: '3'
 services:
 
   webapp:
-    build: backend
+    build:
+      context: backend
+      dockerfile: Dockerfile-dev
+    networks:
+      - link-now-network
     depends_on:
-      - mysql
-
-  mysql:
-    image: mysql:8.0
-    command: 
-      - --default-authentication-plugin=mysql_native_password
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
-    restart: always
+      - redis
+      - mongo
+      - aiohttp-mongdb-unit
+      - aiohttp-redis-unit
     volumes:
-      - ./volumn/mysql/data:/var/lib/mysql
-    environment:
-      # 根目录密码默认123456，可以根据需求改密码
-      # 修改的时候要同时修改serect文件的密码
-      MYSQL_ROOT_PASSWORD: 123456
-      # 这个选项会自动创建数据库
-      MYSQL_DATABASE: my_blog
+      - ./backend/:/backend
+      - ./common_file/:/common_file
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '10'
+    command:
+      - /bin/sh
+      - -c
+      - |
+        # 确定服务启动
+        python3 /common_file/wait-for-it.py mongo:27017 redis:6379 aiohttp-redis-unit:8081 aiohttp-mongdb-unit:9988 python3 server.py
+    ports:
+      - "9040:9040"
+
+  aiohttp-mongdb-unit:
+    build:
+      context: aiohttp_mongdb_unit
+      dockerfile: Dockerfile-dev
+    networks:
+      - link-now-network
+    depends_on:
+      - redis
+      - mongo
+    volumes:
+      - ./aiohttp_mongdb_unit/:/backend
+      - ./common_file/:/common_file
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '10'
+    command:
+      - /bin/sh
+      - -c
+      - |
+        # 确定服务启动
+        python3 /common_file/wait-for-it.py mongo:27017 redis:6379 python3 main.py
+
+  aiohttp-redis-unit:
+    build:
+      context: aiohttp_redis_unit
+      dockerfile: Dockerfile-dev
+    networks:
+      - link-now-network
+    depends_on:
+      - redis
+      - mongo
+    volumes:
+      - ./aiohttp_redis_unit/:/backend
+      - ./common_file/:/common_file
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '10'
+    command:
+      - /bin/sh
+      - -c
+      - |
+        # 确定服务启动
+        python3 /common_file/wait-for-it.py mongo:27017 redis:6379 python3 main.py
+
+  redis:
+    image: "redis:5.0-alpine"
+    networks:
+      - link-now-network
+    ports:
+      - "36379:6379"
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '10'
+
+  mongo:
+    image: mongo:3.6
+    networks:
+      - link-now-network
+    command:
+      - --dbpath=/data/db
+    volumes:
+      - ./volume/mongo:/data/db
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '10'
+
+  nginx:
+    image: nginx:1.17
+    networks:
+      - link-now-network
+    depends_on:
+      - redis
+      - mongo
+      - aiohttp-mongdb-unit
+      - aiohttp-redis-unit
+      - webapp
+    volumes:
+      - ./volume/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8899:80"
+
+networks:
+   link-now-network:
+     driver: bridge
