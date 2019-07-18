@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 from multiprocessing import Process
 
 from server import main as server_main

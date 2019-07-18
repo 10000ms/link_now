@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     index
     ~~~~~~~~~
@@ -79,7 +78,6 @@ class LoginHandler(RequestHandler):
         if get_redis_data['status'] != 'ok':
             messages.append('用户已登陆')
             return self.render('index/login.html', url=url, messages=messages)
-        print(get_data)
         self.set_secure_cookie('chat_room_username', get_data['username'])
 
         # 通过所有检测
@@ -94,6 +92,46 @@ class LoginHandler(RequestHandler):
         self.set_secure_cookie('account', account)
         # 设置用户名的cookie
         # self.set_secure_cookie("chat_room_username", get_user["username"])
+        # Redis记录单点登陆token
+        session_data = {
+            'account': account,
+            'session': user_token_value,
+        }
+        await get_redis_fetch_data(session_data, '/session/add')
+        # 跳转聊天室
+        return self.redirect(chat_room_url)
+
+
+class DemoLoginHandler(RequestHandler):
+
+    async def get(self, *args, **kwargs):
+        """
+        demo登陆
+
+        :param args:
+        :param kwargs:
+        :return: 失败返回失败信息并返回登陆页面，成功跳转聊天室
+        """
+        account = 'admin123'
+
+        json_user_data = {
+            'account': account,
+        }
+
+        # 检测单点登陆
+        await get_redis_fetch_data(json_user_data, '/session/check_login')
+        self.set_secure_cookie('chat_room_username', account)
+
+        # 通过所有检测
+
+        # 获取聊天室url地址
+        chat_room_url = RequestHandler.reverse_url(self, 'chat')
+        # 获取单点登陆的token
+        user_token_value = Support.single_login_token()
+        # 设置单点登陆的cookie
+        self.set_secure_cookie('user_token', user_token_value)
+        # 设置用户账户的cookie
+        self.set_secure_cookie('account', account)
         # Redis记录单点登陆token
         session_data = {
             'account': account,

@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-import json
-
 from aiohttp import web
 
 from config import config

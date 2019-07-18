@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     redis_app
     ~~~~~~~~~

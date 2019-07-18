@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
     application
     ~~~~~~~~~
@@ -25,6 +24,7 @@ class Application(tornado.web.Application):
         handler = [
             tornado.web.url(r'/register', view.index.RegisterHandler, name='register'),
             tornado.web.url(r'/login', view.index.LoginHandler, name='login'),
+            tornado.web.url(r'/demo-login', view.index.DemoLoginHandler, name='demo_login'),
             tornado.web.url(r'/chat', view.chat.ChatRoomHandler, name='chat'),
             tornado.web.url(r'/chat_room', view.chat.ChatHandler, name='chat_room'),
             tornado.web.url(r'/api/users_message', view.send_message.UsersMessage, name='users_message'),

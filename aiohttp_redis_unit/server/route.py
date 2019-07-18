@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from aiohttp import web
 
 from server.handler import session
