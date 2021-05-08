@@ -1,10 +1,5 @@
 # 基于tornado和原生js前端的demo项目：link now 聊天室
 
-项目展示地址：[http://129.204.67.23/](http://129.204.67.23/) （小水管服务器，首次打开会比较慢......）
-
-demo登陆地址：[http://129.204.67.23/demo-login](http://129.204.67.23/demo-login)
-
-
 项目说明
 
 1. 项目使用前后端分离：前端使用原生的JavaScript；后端使用Tornado，信息管理服务器使用aiohttp
