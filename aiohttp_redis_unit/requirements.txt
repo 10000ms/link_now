@@ -5,4 +5,4 @@ chardet==3.0.4
 idna==2.6
 multidict==4.3.1
 yarl==1.2.6
-redis==2.10.6
+redis==4.4.4
